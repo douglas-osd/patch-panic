@@ -259,8 +259,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 5572421381239925542}
-        m_TargetAssemblyTypeName: ResumeManager, Assembly-CSharp
-        m_MethodName: OnResumeButtonPress
+        m_TargetAssemblyTypeName: ResumeButton, Assembly-CSharp
+        m_MethodName: ResumeButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -282,4 +282,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c35163ddd172c44d88c24a371cf9af1a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonAudio: {fileID: 0}

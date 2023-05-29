@@ -25,13 +25,10 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // Pause & unpause the game when escape is pressed, but only if the game is in the playing or paused states
+        // Run TogglePause on escape press
         if(Input.GetKeyDown(KeyCode.Escape))
         {
-            if(State == GameState.Playing || State == GameState.Paused)
-            {
-                TogglePause();
-            }
+            TogglePause();
         }
     }
 
@@ -64,7 +61,8 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // this method doubles up the logic from the escape press, which is shit and pointless
+    // Pauses game if game is playing. Plays game if game is paused.
+    // Also handles pausing & unpausing music.
     private void TogglePause()
     {
         if(State == GameState.Playing)
@@ -85,24 +83,29 @@ public class GameManager : MonoBehaviour
     {
         gamePaused = false;
         Time.timeScale = 1;
+        SoundManager.Instance.MusicPauser(false);
+
     }
 
     private void HandlePaused()
     {
         gamePaused = true;
         Time.timeScale = 0;
+        SoundManager.Instance.MusicPauser(true);
     }
 
     private void HandleWin()
     {
         gamePaused = true;
         Time.timeScale = 0;
+        SoundManager.Instance.MusicPauser(true);
     }    
 
     private void HandleLose()
     {
         gamePaused = true;
         Time.timeScale = 0;
+        SoundManager.Instance.MusicPauser(true);
     }
 
     private void HandleQuit()

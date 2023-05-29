@@ -259,8 +259,8 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 2546310758258933111}
-        m_TargetAssemblyTypeName: GoMenuManager, Assembly-CSharp
-        m_MethodName: OnMainMenuButtonPress
+        m_TargetAssemblyTypeName: MainMenuButton, Assembly-CSharp
+        m_MethodName: MainMenuButtonClick
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -282,4 +282,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1015972b5ad684988bcd09ab823a1d13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  buttonAudio: {fileID: 0}

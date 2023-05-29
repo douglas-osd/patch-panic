@@ -2,28 +2,28 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class MenuManager : MonoBehaviour
 {
+    public static MenuManager Instance;
+
     [SerializeField] private GameObject pauseMenu, failMenu, winMenu;
     [SerializeField] private TMP_Text finalScore, winningScore;
+    [SerializeField] private AudioClip buttonAudio;
 
     TimeSpan uptimeScore;
 
     private void Awake()
     {
+        Instance = this;
         GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
     }
 
     private void OnDestroy()
     {
         GameManager.OnGameStateChanged -= GameManagerOnGameStateChanged;
-    }
-
-    public void OnFeedbackLinkClick()
-    {
-        Application.OpenURL("https://forms.gle/NqLYSaumXePAK4jS9");
     }
 
     private void GameManagerOnGameStateChanged(GameState state)
@@ -59,5 +59,29 @@ public class MenuManager : MonoBehaviour
             PlayerPrefs.SetInt("highScore", score);
             PlayerPrefs.Save();
         }
+    }
+
+    public void QuitButtonPress()
+    {
+        SoundManager.Instance.PlaySound(buttonAudio);
+        GameManager.Instance.UpdateGameState(GameState.Quit);
+    }
+
+    public void ResumeButtonPress()
+    {
+        SoundManager.Instance.PlaySound(buttonAudio);
+        GameManager.Instance.UpdateGameState(GameState.Playing);
+    }
+
+    public void MenuButtonPress()
+    {
+        SoundManager.Instance.PlaySound(buttonAudio);
+        SceneManager.LoadScene(0);
+    }
+
+    public void FeedbackButtonPress()
+    {
+        SoundManager.Instance.PlaySound(buttonAudio);
+        Application.OpenURL("https://forms.gle/NqLYSaumXePAK4jS9");
     }
 }

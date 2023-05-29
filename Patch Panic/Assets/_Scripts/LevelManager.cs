@@ -28,10 +28,10 @@ public class LevelManager : MonoBehaviour
     public int scorePerDifficulty;
     public int completedUpdateBonus; // base bonus score upon each installed update
     public int fullyUpdatedBonus; // base bonus scope upon fully updating the server
-    public bool levelLogsEnabled;
-    public float downTimerStart = 30.0f;
-    public float downTimer;
-    public float winTimer = 120.0f;
+    [SerializeField] private float downTimerStart = 30.0f, winTimer = 120.0f;
+    [SerializeField] private AudioClip levelMusic;
+
+    private float downTimer;
 
     private GameObject[] servers;
     private TimeSpan levelTimespan;
@@ -49,6 +49,7 @@ public class LevelManager : MonoBehaviour
         playerScore = 0;
         downTimer = downTimerStart;
         securityHealth = startingSecurityHealth;
+        SoundManager.Instance.PlayMusic(levelMusic);
         servers = GameObject.FindGameObjectsWithTag("Server");
     }
 
@@ -97,13 +98,11 @@ public class LevelManager : MonoBehaviour
         {
             playerScore += (scorePerDifficulty * difficulty);
             cumulativeUptime += (int)globalDamageInterval;
-            LevelLogger("Score gained! Now at " + playerScore);
         }
 
         if (pendingUpdates != 0)
         {
             securityHealth -= (difficulty * pendingUpdates);
-            LevelLogger("Security health lost. Now at " + securityHealth);
         }
     }
 
@@ -178,13 +177,4 @@ public class LevelManager : MonoBehaviour
             }
         }
     }
-
-    void LevelLogger(object message)
-    {
-        if (levelLogsEnabled)
-        {
-            Debug.Log(message);
-        }
-    }
-
 }
