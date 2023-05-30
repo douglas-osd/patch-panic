@@ -32,9 +32,6 @@ public class ServerBehaviour : MonoBehaviour
     private bool installClockSet; // true if install clock is set
     private bool canClick; // true during trigger enable, allows player to interract
 
-    public Color downColour = new Color(194, 74, 74);
-    public Color upColour = new Color(186, 200, 182);
-
     void Start()
     {
         serverStatus = 0;
