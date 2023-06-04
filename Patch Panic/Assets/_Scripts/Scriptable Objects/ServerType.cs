@@ -10,37 +10,35 @@ public class ServerType : ScriptableObject
     // Further assets derived from this scriptable object can be used to create server variants.
     // Attach the relevant scriptable object to the server's monobehaviour script to give it access to data.
 
-    //[MinMaxRange(0,30)]
-    //public RangedFloat updateFrequency;
+    [MinMaxRange(0, 30)] public RangedFloat updateFrequency, downloadSpeed, installSpeed;
 
-    public float lowerTimerOffset;
-    public float upperTimerOffset;
-    public float updateFrequency;
-    public float downloadSpeed;
-    public float installSpeed;
-    public int downloadErrorRate;
-    public int installErrorRate;
-    public int difficultyModifier;
+    [SerializeField] public float downloadErrorRate, installErrorRate;
+    [SerializeField] public int baseScore, baseDamage, difficultyModifier;
 
-    public bool FailChecker(bool isDownload)
+
+
+    public bool ErrorCheck(string errorType)
     {
-        int errorRate = (isDownload) ? downloadErrorRate : installErrorRate;
+        return errorType switch
+        {
+            "download" => Random.Range(0, 100) <= downloadErrorRate * difficultyModifier,
+            "install" => Random.Range(0, 100) <= installErrorRate * difficultyModifier,
+            _ => false
+        };
+    }
 
-        if (Random.Range(0, 100) <= errorRate)
+    public bool HandleUpdateTimer(float timer, bool clockSet, bool wantsUpdate)
+    {
+        if(!wantsUpdate)
         {
-            return true;
-        }
-        else
-        {
+            clockSet = false;
+            timer = 0.0f;
             return false;
         }
-    }
 
-    public void HandleUpdateTimer(float timer, bool clockSet)
-    {
         if(!clockSet)
         {
-            timer = Random.Range(lowerTimerOffset * updateFrequency, upperTimerOffset * updateFrequency);
+            timer = Random.Range(updateFrequency.minValue, updateFrequency.maxValue);
             clockSet = true;
         }
 
@@ -50,15 +48,17 @@ public class ServerType : ScriptableObject
         {
             clockSet = false;
             timer = 0.0f;
-            //TriggerUpdate();
+            return true;
         }
+
+        return false;
     }
 
-    public void HandleDownloadTimer(float timer, bool clockSet)
+    public bool HandleDownloadTimer(float timer, bool clockSet)
     {
         if(!clockSet)
         {
-            timer = Random.Range(lowerTimerOffset * updateFrequency, upperTimerOffset * updateFrequency);
+            timer = Random.Range(downloadSpeed.minValue, downloadSpeed.maxValue);
             clockSet = true;
         }
 
@@ -68,15 +68,18 @@ public class ServerType : ScriptableObject
         {
             clockSet = false;
             timer = 0.0f;
-            //TriggerDownloadComplete();
+            return true;
         }
+
+        return false;
     }
 
-    public void HandleInstallTimer(float timer, bool clockSet)
+    public bool HandleInstallTimer(float timer, bool clockSet)
     {
         if(!clockSet)
         {
-            timer = Random.Range(lowerTimerOffset * updateFrequency, upperTimerOffset * updateFrequency);
+            timer = Random.Range(installSpeed.minValue, installSpeed.maxValue);
+            clockSet = true;
         }
 
         timer -= Time.deltaTime;
@@ -85,8 +88,10 @@ public class ServerType : ScriptableObject
         {
             clockSet = false;
             timer = 0.0f;
-            //TriggerInstallComplete();
+            return true;
         }
+
+        return false;
     }
 
 }
