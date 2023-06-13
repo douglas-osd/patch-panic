@@ -12,11 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b6e0578624df0448aa1400eed8658d49, type: 3}
   m_Name: DefaultServer
   m_EditorClassIdentifier: 
-  lowerTimerOffset: 0
-  upperTimerOffset: 0
-  updateFrequency: 0
-  downloadSpeed: 0
-  installSpeed: 0
-  downloadErrorRate: 0
-  installErrorRate: 0
-  difficultyModifier: 0
+  updateFrequency:
+    minValue: 10
+    maxValue: 20
+  downloadSpeed:
+    minValue: 5
+    maxValue: 15
+  installSpeed:
+    minValue: 5
+    maxValue: 10
+  downloadErrorRate: 25
+  installErrorRate: 10
+  baseScore: 100
+  baseDamage: 0
+  difficultyModifier: 1
