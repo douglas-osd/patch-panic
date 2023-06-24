@@ -43,6 +43,11 @@ public class LevelManager : MonoBehaviour
         Instance = this;
     }
 
+    private void OnDestroy()
+    {
+        
+    }
+
 
     void Start()
     {
@@ -92,6 +97,7 @@ public class LevelManager : MonoBehaviour
 
     }
 
+    // Old method
     public void ScoreTick(int difficulty, int pendingUpdates, bool serverDown)
     {
         if (!serverDown)
@@ -106,6 +112,13 @@ public class LevelManager : MonoBehaviour
         }
     }
 
+    // New method
+    public void ScoringTick(int difficultyMod, int baseScore, ServerState state)
+    {
+
+    }
+
+    // Old method
     public void BonusScore(int difficulty, bool fullyUpdated)
     {
         if (fullyUpdated)
@@ -116,6 +129,18 @@ public class LevelManager : MonoBehaviour
         {
             playerScore += (completedUpdateBonus * difficulty);
         }
+    }
+
+    // New method
+    public void AddBonusScore(int updatesCompleted, int difficultyMod, int baseScore, bool fullyUpdated)
+    {
+        if(fullyUpdated)
+        {
+            playerScore += ((updatesCompleted * difficultyMod * baseScore)*2);
+            return;
+        }
+
+        playerScore = +(updatesCompleted * difficultyMod * baseScore);
     }
 
     // method combining all the player facing text in the UI during gameplay, called at the start of each update call

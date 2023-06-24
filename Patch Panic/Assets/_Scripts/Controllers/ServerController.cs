@@ -22,6 +22,8 @@ public class ServerController : MonoBehaviour
 
     public int updateQueue;
 
+    public int downloadedUpdates;
+
     private void Start()
     {
         UpdateServerState(ServerState.Idle);
@@ -33,6 +35,8 @@ public class ServerController : MonoBehaviour
         {
             return;
         }
+
+        _serverType.DoesServerWantUpdates(updateQueue, wantsUpdate);
 
         HandleWaitForUpdate();
 
@@ -67,6 +71,8 @@ public class ServerController : MonoBehaviour
         }
     }
 
+    // In each state, include a trigger for the relevant animation state & relevant sound effects
+    // 'Handle' methods are for logic only
     public void UpdateServerState(ServerState newState)
     {
         State = newState;
@@ -82,6 +88,7 @@ public class ServerController : MonoBehaviour
             case ServerState.DownloadFailed:
                 break;
             case ServerState.DownloadComplete:
+                HandleDownloadComplete();
                 break;
             case ServerState.NeedsInstall:
                 break;
@@ -90,10 +97,12 @@ public class ServerController : MonoBehaviour
             case ServerState.InstallFailed:
                 break;
             case ServerState.InstallComplete:
+                HandleInstallComplete();
                 break;
             case ServerState.WaitingToNotify:
                 break;
             case ServerState.UsersNotified:
+                HandleUsersNotified();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(newState), newState, null);
@@ -130,6 +139,13 @@ public class ServerController : MonoBehaviour
         }
     }
 
+    private void HandleDownloadComplete()
+    {
+        downloadedUpdates = updateQueue;
+
+        UpdateServerState(ServerState.NeedsInstall);
+    }    
+
     private void HandleInstalling()
     {
         if (_serverType.HandleInstallTimer(downloadTimer, downloadTimerSet))
@@ -143,6 +159,19 @@ public class ServerController : MonoBehaviour
             UpdateServerState(ServerState.InstallComplete);
         }
     }
+
+    private void HandleInstallComplete()
+    {
+        UpdateServerState(ServerState.WaitingToNotify);
+    }
+
+    private void HandleUsersNotified()
+    {
+        updateQueue -= downloadedUpdates;
+        LevelManager.Instance.AddBonusScore(downloadedUpdates, _serverType.difficultyModifier, _serverType.baseScore, _serverType.CheckFullyUpdated(updateQueue));
+        UpdateServerState(ServerState.Idle);
+    }
+
 }
 
 public enum ServerState

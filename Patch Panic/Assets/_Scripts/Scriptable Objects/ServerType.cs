@@ -10,10 +10,13 @@ public class ServerType : ScriptableObject
     // Further assets derived from this scriptable object can be used to create server variants.
     // Attach the relevant scriptable object to the server's monobehaviour script to give it access to data.
 
+    // Include animations for:
+    // Idle/Server Running, Please Trigger Download, Downloading, Download Failed, Download Succeeded, Please Trigger Install, Installing, Install Failed, Install Succeeded/Please Notify Users
+
     [MinMaxRange(0, 30)] public RangedFloat updateFrequency, downloadSpeed, installSpeed;
 
     [SerializeField] public float downloadErrorRate, installErrorRate;
-    [SerializeField] public int baseScore, baseDamage, difficultyModifier;
+    [SerializeField] public int baseScore, baseDamage, difficultyModifier, maxUpdatesInQueue;
 
 
 
@@ -92,6 +95,30 @@ public class ServerType : ScriptableObject
         }
 
         return false;
+    }
+
+    public void DoesServerWantUpdates(int updateQueue, bool wantsUpdate)
+    {
+        if (updateQueue >= maxUpdatesInQueue)
+        {
+            wantsUpdate = false;
+        }
+        else
+        {
+            wantsUpdate = true;
+        }
+    }
+
+    public bool CheckFullyUpdated(int updateQueue)
+    {
+        if(updateQueue == 0)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
 }
