@@ -6,12 +6,12 @@ public class PlayerController : MonoBehaviour
 {
     private Rigidbody2D body;
 
-    float horizontal;
-    float vertical;
-    float moveLimiter = 0.7f;
+    private float horizontal;
+    private float vertical;
+    private float moveLimiter = 0.7f;
 
     [Header("Settings")]
-    public float runSpeed = 20.0f;
+    [SerializeField] private float runSpeed = 20.0f;
 
     void Start()
     {

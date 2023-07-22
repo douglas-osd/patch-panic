@@ -20,6 +20,7 @@ public class ServerController : MonoBehaviour
     private bool installTimerSet;
     private bool wantsUpdate;
     private bool serverUp;
+    private bool canClick;
 
     public int updateQueue;
 
@@ -33,17 +34,28 @@ public class ServerController : MonoBehaviour
     private void Awake()
     {
         LevelManager.GlobalScoringTick += LevelManagerGlobalScoringTick;
+        WorkstationController.WorkstationTrigger += WorkstationTrigger;
     }
 
     private void OnDestroy()
     {
         LevelManager.GlobalScoringTick -= LevelManagerGlobalScoringTick;
+        WorkstationController.WorkstationTrigger -= WorkstationTrigger;
     }
 
     // Runs on event: runs the logic for adding score based on this server's status.
     private void LevelManagerGlobalScoringTick(bool ticked)
     {
         LevelManager.Instance.ScoringTick(_serverType.difficultyModifier, _serverType.baseScore, _serverType.baseDamage, serverUp, updateQueue);
+    }
+
+    // Runs when workstation is triggered.
+    private void WorkstationTrigger(bool triggered)
+    {
+        if(State == ServerState.WaitingToNotify)
+        {
+            UpdateServerState(ServerState.UsersNotified);
+        }
     }
 
     private void Update()
@@ -106,6 +118,7 @@ public class ServerController : MonoBehaviour
                 HandleNeedsUpdate();
                 break;
             case ServerState.Downloading:
+                HandleStartDownload();
                 break;
             case ServerState.DownloadFailed:
                 HandleDownloadFailed();
@@ -117,6 +130,7 @@ public class ServerController : MonoBehaviour
                 HandleNeedsInstall();
                 break;
             case ServerState.Installing:
+                HandleStartInstall();
                 break;
             case ServerState.InstallFailed:
                 HandleInstallFailed();
@@ -162,8 +176,13 @@ public class ServerController : MonoBehaviour
 
     private void HandleNeedsUpdate()
     {
-        // Animation & play a sound.
+        // Animation & sound.
         // If clicked in this state, switch state to Downloading & set server to DOWN.
+    }
+
+    private void HandleStartDownload()
+    {
+        // Animation & sound.
         serverUp = false;
     }
 
@@ -185,7 +204,6 @@ public class ServerController : MonoBehaviour
     private void HandleDownloadFailed()
     {
         // Animation & sound.
-        // If clicked in this state, switch state to Downloading.
     }
 
     // When a download completes, update the downloaded queue to match the total updates at that time, then move to NeedsInstall
@@ -199,7 +217,11 @@ public class ServerController : MonoBehaviour
     private void HandleNeedsInstall()
     {
         // Animation & sound.
-        // If clicked in this state, transition to Installing.
+    }
+
+    private void HandleStartInstall()
+    {
+        // Animation & sound.
     }
 
     // Runs the install timer logic. If the timer returns true (timer has ended), then check for an install error, and either fail or complete the install.
@@ -220,7 +242,6 @@ public class ServerController : MonoBehaviour
     private void HandleInstallFailed()
     {
         // Animation & sound.
-        // If clicked in this state, transition to Installing.
     }
 
     // Install has completed, now move to wait for the player to notify users.
@@ -239,9 +260,71 @@ public class ServerController : MonoBehaviour
     // Then run AddBonusScore logic and update the server state to idle.
     private void HandleUsersNotified()
     {
+        // Add sound effect and animation for updating the server!
         updateQueue -= downloadedUpdates;
         LevelManager.Instance.AddBonusScore(downloadedUpdates, _serverType.difficultyModifier, _serverType.baseScore, _serverType.CheckFullyUpdated(updateQueue));
         UpdateServerState(ServerState.Idle);
+    }
+
+    private void OnMouseDown()
+    {
+        if (GameManager.Instance.gamePaused == true)
+        {
+            return;
+        }
+
+        if(!canClick)
+        {
+            return;
+        }
+
+        switch (State)
+        {
+            case ServerState.Idle:
+                break;
+            case ServerState.NeedsUpdate:
+                UpdateServerState(ServerState.Downloading);
+                break;
+            case ServerState.Downloading:
+                break;
+            case ServerState.DownloadFailed:
+                UpdateServerState(ServerState.Downloading);
+                break;
+            case ServerState.DownloadComplete:
+                break;
+            case ServerState.NeedsInstall:
+                UpdateServerState(ServerState.Installing);
+                break;
+            case ServerState.Installing:
+                break;
+            case ServerState.InstallFailed:
+                UpdateServerState(ServerState.Installing);
+                break;
+            case ServerState.InstallComplete:
+                break;
+            case ServerState.WaitingToNotify:
+                break;
+            case ServerState.UsersNotified:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(State), State, null);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            canClick = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player"))
+        {
+            canClick = false;
+        }
     }
 
 }

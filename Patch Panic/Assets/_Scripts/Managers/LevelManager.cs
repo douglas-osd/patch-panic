@@ -17,7 +17,6 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private TMP_Text failTimerText;
 
     [Header("CurrentScores")]
-    public int userHealth;
     public int securityHealth;
     public int playerScore;
     public int cumulativeUptime;
@@ -25,9 +24,9 @@ public class LevelManager : MonoBehaviour
     [Header("Settings")]
     public int startingSecurityHealth;
     public float globalScoringInterval;
-    public int scorePerDifficulty;
-    public int completedUpdateBonus; // base bonus score upon each installed update
-    public int fullyUpdatedBonus; // base bonus scope upon fully updating the server
+    public int scorePerDifficulty; // old code
+    public int completedUpdateBonus; // old code
+    public int fullyUpdatedBonus; // old code
     [SerializeField] private float downTimerStart = 30.0f, winTimer = 120.0f;
     [SerializeField] private AudioClip levelMusic;
 
