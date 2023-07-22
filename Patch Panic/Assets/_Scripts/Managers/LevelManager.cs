@@ -24,7 +24,7 @@ public class LevelManager : MonoBehaviour
 
     [Header("Settings")]
     public int startingSecurityHealth;
-    public float globalDamageInterval;
+    public float globalScoringInterval;
     public int scorePerDifficulty;
     public int completedUpdateBonus; // base bonus score upon each installed update
     public int fullyUpdatedBonus; // base bonus scope upon fully updating the server
@@ -37,6 +37,9 @@ public class LevelManager : MonoBehaviour
     private TimeSpan levelTimespan;
     private TimeSpan failTimespan;
     private bool allServersDown;
+    private float intervalTimer;
+
+    public static event Action<bool> GlobalScoringTick;
 
     void Awake()
     {
@@ -48,11 +51,11 @@ public class LevelManager : MonoBehaviour
         
     }
 
-
     void Start()
     {
         playerScore = 0;
         downTimer = downTimerStart;
+        intervalTimer = globalScoringInterval;
         securityHealth = startingSecurityHealth;
         SoundManager.Instance.PlayMusic(levelMusic);
         servers = GameObject.FindGameObjectsWithTag("Server");
@@ -103,7 +106,7 @@ public class LevelManager : MonoBehaviour
         if (!serverDown)
         {
             playerScore += (scorePerDifficulty * difficulty);
-            cumulativeUptime += (int)globalDamageInterval;
+            cumulativeUptime += (int)globalScoringInterval;
         }
 
         if (pendingUpdates != 0)
@@ -113,9 +116,18 @@ public class LevelManager : MonoBehaviour
     }
 
     // New method
-    public void ScoringTick(int difficultyMod, int baseScore, ServerState state)
+    public void ScoringTick(int difficultyMod, int baseScore, int baseDamage, bool serverUp, int updateQueue)
     {
+        if(serverUp)
+        {
+            playerScore += (baseScore * difficultyMod);
+            cumulativeUptime += (int)globalScoringInterval;
+        }
 
+        if(updateQueue != 0)
+        {
+            securityHealth -= (baseDamage * updateQueue);
+        }
     }
 
     // Old method
@@ -132,6 +144,8 @@ public class LevelManager : MonoBehaviour
     }
 
     // New method
+    // If the server is fully updated, double the score output, if it isn't, add the score without the multiplier.
+    // This method captures data originating in the ServerType object.
     public void AddBonusScore(int updatesCompleted, int difficultyMod, int baseScore, bool fullyUpdated)
     {
         if(fullyUpdated)
@@ -180,6 +194,19 @@ public class LevelManager : MonoBehaviour
             }
 
             winTimer -= Time.deltaTime;
+        }
+    }
+
+    // Runs the timer that triggers scoring & damage on a set interval. Interval can be changed by changing the globalScoringInterval.
+    // When timer hits 0, the GlobalScoringTick event triggers, which causes servers to run the ScoringTick method based on their current status.
+    private void GlobalIntervalTimer()
+    {
+        intervalTimer -= Time.deltaTime;
+
+        if(intervalTimer <= 0)
+        {
+            GlobalScoringTick?.Invoke(true);
+            intervalTimer = globalScoringInterval;
         }
     }
 

@@ -129,7 +129,7 @@ public class ServerBehaviour : MonoBehaviour
 
         damageClock += Time.deltaTime;
 
-        if (damageClock >= LevelManager.Instance.globalDamageInterval)
+        if (damageClock >= LevelManager.Instance.globalScoringInterval)
         {
             LevelManager.Instance.ScoreTick(difficultyRating, pendingUpdates, serverIsDown);
             damageClock = 0;
