@@ -19,7 +19,7 @@ public class ServerController : MonoBehaviour
     private float installTimer;
     private bool installTimerSet;
     private bool wantsUpdate;
-    private bool serverUp;
+    public bool serverUp;
     private bool canClick;
 
     public int updateQueue;

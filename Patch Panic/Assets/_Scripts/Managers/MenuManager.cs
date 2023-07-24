@@ -34,7 +34,7 @@ public class MenuManager : MonoBehaviour
 
         if(state == GameState.Lose)
         {
-            finalScore.text = $"You scored {LevelManager.Instance.playerScore}";
+            finalScore.text = $"You scored {LevelManager.Instance._player.playerScore}";
             SetHighScore();
         }
 
@@ -45,14 +45,14 @@ public class MenuManager : MonoBehaviour
             int upMins = uptimeScore.Minutes;
             int upSecs = uptimeScore.Seconds;
 
-            winningScore.text = $"You scored {LevelManager.Instance.playerScore} with a total uptime of {upMins}:{upSecs}!";
+            winningScore.text = $"You scored {LevelManager.Instance._player.playerScore} with a total uptime of {upMins}:{upSecs}!";
             SetHighScore();
         }
     }
 
     private void SetHighScore()
     {
-        int score = LevelManager.Instance.playerScore;
+        int score = LevelManager.Instance._player.playerScore;
 
         if(score >= PlayerPrefs.GetInt("highScore", 0))
         {

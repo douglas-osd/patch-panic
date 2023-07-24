@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -2825294372331100772}
   - component: {fileID: 7366200063457341645}
   - component: {fileID: 8621345408007332279}
-  - component: {fileID: -777030738943292515}
+  - component: {fileID: 2463397770020443639}
   m_Layer: 0
   m_Name: Workstation
   m_TagString: Workstation
@@ -153,7 +153,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0.05}
   serializedVersion: 2
   m_Radius: 0.7
---- !u!114 &-777030738943292515
+--- !u!114 &2463397770020443639
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -162,7 +162,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 2512469218459180112}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b52afa333f064e62981d52bbc597554, type: 3}
+  m_Script: {fileID: 11500000, guid: dcdb41ee073e9491199a64ba72167665, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  servers: []

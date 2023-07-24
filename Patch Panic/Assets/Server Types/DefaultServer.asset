@@ -24,5 +24,6 @@ MonoBehaviour:
   downloadErrorRate: 25
   installErrorRate: 10
   baseScore: 100
-  baseDamage: 0
+  baseDamage: 1
   difficultyModifier: 1
+  maxUpdatesInQueue: 5
