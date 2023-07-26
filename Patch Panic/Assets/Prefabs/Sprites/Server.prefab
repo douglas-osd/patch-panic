@@ -292,7 +292,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 0ef80467387284daea90ffb12c9dfe63, type: 3}
-  m_Color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  m_Color: {r: 0.3018868, g: 0.2976148, b: 0.2976148, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -379,5 +379,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _serverType: {fileID: 11400000, guid: 8ed98ec054d1d4e7384f395bf34e94ba, type: 2}
   State: 0
+  serverUp: 0
   updateQueue: 0
   downloadedUpdates: 0
