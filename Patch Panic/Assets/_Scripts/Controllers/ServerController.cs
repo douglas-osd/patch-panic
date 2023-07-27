@@ -8,17 +8,19 @@ public class ServerController : MonoBehaviour
 
     [SerializeField] ServerType _serverType;
 
+    private Animator animator;
+
     public ServerState State;
 
     public static event Action<ServerState> OnServerStateChanged;
 
     private float updateTimer;
     private bool updateTimerSet;
+    private bool wantsUpdate;
     private float downloadTimer;
     private bool downloadTimerSet;
     private float installTimer;
     private bool installTimerSet;
-    private bool wantsUpdate;
     public bool serverUp;
     private bool canClick;
 
@@ -29,46 +31,44 @@ public class ServerController : MonoBehaviour
     private void Start()
     {
         UpdateServerState(ServerState.Idle);
+        animator = GetComponent<Animator>();
     }
 
     private void Awake()
     {
         LevelManager.GlobalScoringTick += LevelManagerGlobalScoringTick;
-        WorkstationController.WorkstationTrigger += WorkstationTrigger;
+        //WorkstationController.WorkstationTrigger += WorkstationTrigger;
     }
 
     private void OnDestroy()
     {
         LevelManager.GlobalScoringTick -= LevelManagerGlobalScoringTick;
-        WorkstationController.WorkstationTrigger -= WorkstationTrigger;
+        //WorkstationController.WorkstationTrigger -= WorkstationTrigger;
     }
 
     // Runs on event: runs the logic for adding score based on this server's status.
     private void LevelManagerGlobalScoringTick(bool ticked)
     {
         LevelManager.Instance.ScoringTick(_serverType.difficultyModifier, _serverType.baseScore, _serverType.baseDamage, serverUp, updateQueue);
+        Debug.Log("Score ticked.");
     }
 
-    // Runs when workstation is triggered.
-    private void WorkstationTrigger(bool triggered)
+    public void WorkstationTrigger()
     {
         if(State == ServerState.WaitingToNotify)
         {
             UpdateServerState(ServerState.UsersNotified);
+            Debug.Log("Users notified by workstation.");
         }
     }
 
     private void Update()
     {
-        // Stop running further logic if game is paused.
         if(GameManager.Instance.gamePaused == true)
         {
             return;
         }
 
-        _serverType.DoesServerWantUpdates(updateQueue, wantsUpdate);
-
-        // Updates the server state when an update is needed.
         HandleWaitForUpdate();
 
         switch (State)
@@ -103,8 +103,6 @@ public class ServerController : MonoBehaviour
 
     }
 
-    // In each state, include a trigger for the relevant animation state & relevant sound effects
-    // 'Handle' methods are for logic only
     public void UpdateServerState(ServerState newState)
     {
         State = newState;
@@ -152,17 +150,19 @@ public class ServerController : MonoBehaviour
 
     }
 
-    // Runs continually to accumulate additional updates in the queue or move the server to the next state.
-    // If the update timer logic returns true, count the update queue up by one.
-    // If the server is idle and with a queue over 0, the server moves to NeedsUpdate.
     private void HandleWaitForUpdate()
     {
-        if(_serverType.HandleUpdateTimer(updateTimer, updateTimerSet, wantsUpdate))
+        if (_serverType.DoesServerWantUpdates(updateQueue))
         {
-            updateQueue++;
+            wantsUpdate = true;
+
+            if(HandleUpdateTimer())
+            {
+                updateQueue++;
+            }
         }
 
-        if(State == ServerState.Idle && updateQueue > 0)
+        if (State == ServerState.Idle && updateQueue > 0)
         {
             UpdateServerState(ServerState.NeedsUpdate);
         }
@@ -170,26 +170,26 @@ public class ServerController : MonoBehaviour
 
     private void HandleIdle()
     {
-        // Animation & sound.
         serverUp = true;
     }
 
     private void HandleNeedsUpdate()
     {
         // Animation & sound.
-        // If clicked in this state, switch state to Downloading & set server to DOWN.
+        animator.SetInteger("animState", 1);
     }
 
     private void HandleStartDownload()
     {
         // Animation & sound.
+        animator.SetInteger("animState", 2);
         serverUp = false;
     }
 
     // If the download timer logic retuns true (timer has ended), check for a download error, then either fail or complete the download.
     private void HandleDownloading()
     {
-        if(_serverType.HandleDownloadTimer(downloadTimer, downloadTimerSet))
+        if(HandleDownloadTimer())
         {
             if(_serverType.ErrorCheck("download"))
             {
@@ -204,30 +204,31 @@ public class ServerController : MonoBehaviour
     private void HandleDownloadFailed()
     {
         // Animation & sound.
+        animator.SetInteger("animState", 3);
     }
 
-    // When a download completes, update the downloaded queue to match the total updates at that time, then move to NeedsInstall
     private void HandleDownloadComplete()
     {
         downloadedUpdates = updateQueue;
+        animator.SetInteger("animState", 4);
 
         UpdateServerState(ServerState.NeedsInstall);
     }    
 
     private void HandleNeedsInstall()
     {
-        // Animation & sound.
+        // Animation & sound?
     }
 
     private void HandleStartInstall()
     {
         // Animation & sound.
+        animator.SetInteger("animState", 5);
     }
 
-    // Runs the install timer logic. If the timer returns true (timer has ended), then check for an install error, and either fail or complete the install.
     private void HandleInstalling()
     {
-        if (_serverType.HandleInstallTimer(installTimer, installTimerSet))
+        if (HandleInstallTimer())
         {
             if (_serverType.ErrorCheck("install"))
             {
@@ -242,25 +243,25 @@ public class ServerController : MonoBehaviour
     private void HandleInstallFailed()
     {
         // Animation & sound.
+        animator.SetInteger("animState", 6);
     }
 
-    // Install has completed, now move to wait for the player to notify users.
     private void HandleInstallComplete()
     {
+        animator.SetInteger("animState", 7);
         UpdateServerState(ServerState.WaitingToNotify);
     }
 
     private void HandleWaitingToNotify()
     {
-        // Animation & sound.
+        // Animation & sound?
         // If workstation is clicked in this state, set state to UsersNotified. Probably need to listen to an event here?
     }
 
-    // When users are notified, count the update queue down by the number of updates accumulated in the download queue (that have now been installed)
-    // Then run AddBonusScore logic and update the server state to idle.
     private void HandleUsersNotified()
     {
         // Add sound effect and animation for updating the server!
+        animator.SetTrigger("notified");
         updateQueue -= downloadedUpdates;
         LevelManager.Instance.AddBonusScore(downloadedUpdates, _serverType.difficultyModifier, _serverType.baseScore, _serverType.CheckFullyUpdated(updateQueue));
         UpdateServerState(ServerState.Idle);
@@ -325,6 +326,73 @@ public class ServerController : MonoBehaviour
         {
             canClick = false;
         }
+    }
+
+    public bool HandleUpdateTimer()
+    {
+        if (!wantsUpdate)
+        {
+            updateTimerSet = false;
+            updateTimer = 0.0f;
+            return false;
+        }
+
+        if (!updateTimerSet)
+        {
+            updateTimer = UnityEngine.Random.Range(_serverType.updateFrequency.minValue, _serverType.updateFrequency.maxValue);
+            updateTimerSet = true;
+        }
+
+        updateTimer -= Time.deltaTime;
+
+        if (updateTimer <= 0.0f)
+        {
+            updateTimerSet = false;
+            updateTimer = 0.0f;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool HandleDownloadTimer()
+    {
+        if (!downloadTimerSet)
+        {
+            downloadTimer = UnityEngine.Random.Range(_serverType.downloadSpeed.minValue, _serverType.downloadSpeed.maxValue);
+            downloadTimerSet = true;
+        }
+
+        downloadTimer -= Time.deltaTime;
+
+        if (downloadTimer <= 0.0f)
+        {
+            downloadTimerSet = false;
+            downloadTimer = 0.0f;
+            return true;
+        }
+
+        return false;
+    }
+
+    public bool HandleInstallTimer()
+    {
+        if (!installTimerSet)
+        {
+            installTimer = UnityEngine.Random.Range(_serverType.installSpeed.minValue, _serverType.installSpeed.maxValue);
+            installTimerSet = true;
+        }
+
+        installTimer -= Time.deltaTime;
+
+        if (installTimer <= 0.0f)
+        {
+            installTimerSet = false;
+            installTimer = 0.0f;
+            return true;
+        }
+
+        return false;
     }
 
 }

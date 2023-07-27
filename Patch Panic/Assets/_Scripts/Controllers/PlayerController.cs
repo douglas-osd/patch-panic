@@ -13,9 +13,12 @@ public class PlayerController : MonoBehaviour
     [Header("Settings")]
     [SerializeField] private float runSpeed = 20.0f;
 
+    private Animator animator;
+
     void Start()
     {
         body = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
     }
 
     void Update()
@@ -28,6 +31,17 @@ public class PlayerController : MonoBehaviour
         // Gives a value between -1 and 1
         horizontal = Input.GetAxisRaw("Horizontal"); // -1 is left
         vertical = Input.GetAxisRaw("Vertical"); // -1 is down
+
+        if (LevelManager.Instance.allServersDown)
+        {
+            animator.SetBool("shocked", true);
+        }
+        else
+        {
+            animator.SetBool("shocked", false);
+        }
+
+        animator.SetInteger("direction", (int)horizontal);
     }
 
     void FixedUpdate()

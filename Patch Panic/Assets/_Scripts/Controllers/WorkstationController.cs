@@ -8,22 +8,34 @@ public class WorkstationController : MonoBehaviour
 
     public static WorkstationController Instance;
 
-    public static event Action<bool> WorkstationTrigger;
+    //public static event Action<bool> WorkstationTrigger;
+
+    private GameObject[] servers;
 
     private bool canClick;
 
     private void Awake()
     {
         Instance = this;
+        servers = GameObject.FindGameObjectsWithTag("Server");
     }
 
     private void OnMouseDown()
     {
-        if(canClick)
+        if (GameManager.Instance.gamePaused == true)
         {
-            WorkstationTrigger?.Invoke(true);
+            return;
         }
 
+        if (canClick)
+        {
+            //WorkstationTrigger?.Invoke(true);
+
+            foreach (GameObject go in servers)
+            {
+                go.GetComponent<ServerController>().WorkstationTrigger();
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

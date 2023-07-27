@@ -25,14 +25,14 @@ public class LevelManager : MonoBehaviour
     public int startingPlayerHealth;
     public float globalScoringInterval;
     [SerializeField] private float failTimerStart = 30.0f, winTimer = 120.0f;
-    [SerializeField] private AudioClip levelMusic;
+    [SerializeField] private AudioClip levelMusic, updatedSound;
 
     private float failTimer;
 
     private GameObject[] servers;
     private TimeSpan levelTimespan;
     private TimeSpan failTimespan;
-    private bool allServersDown;
+    public bool allServersDown;
     private float intervalTimer;
 
     public static event Action<bool> GlobalScoringTick;
@@ -61,34 +61,9 @@ public class LevelManager : MonoBehaviour
     {
         LevelUITextUpdate();
 
-        if(winTimer <= 0)
-        {
-            GameManager.Instance.UpdateGameState(GameState.Win);
-        }
+        CheckWinLoseConds();
 
-        // sets state to lose if lose conditions are met and the player has not already won
-        if(_player.playerHealth <= 0 || failTimer <= 0)
-        {
-            if(GameManager.Instance.State != GameState.Win)
-            {
-                GameManager.Instance.UpdateGameState(GameState.Lose);
-            }
-        }
-
-        // Messy logic: loops over objects tagged 'server' to get the Controller & triggers the failTimer if none of them are up.
-        // To do: Alter this to handle multiple server variants. This may involve reworking how this timer functions entirely!
-        foreach (GameObject go in servers)
-        {
-            if(go.GetComponent<ServerController>().serverUp == true)
-            {
-                allServersDown = false;
-                break;
-            }
-            else
-            {
-                allServersDown = true;
-            }
-        }
+        ServerDownChecker();
 
         failTimerUI.SetActive(allServersDown);
 
@@ -101,7 +76,6 @@ public class LevelManager : MonoBehaviour
         if(serverUp)
         {
             _player.playerScore += (baseScore * difficultyMod);
-            cumulativeUptime += (int)globalScoringInterval;
         }
 
         if(updateQueue != 0)
@@ -115,11 +89,13 @@ public class LevelManager : MonoBehaviour
     {
         if(fullyUpdated)
         {
-            _player.playerScore += ((updatesCompleted * difficultyMod * baseScore)*2);
+            _player.playerScore += updatesCompleted * difficultyMod * baseScore * 2;
+            SoundManager.Instance.PlaySound(updatedSound);
             return;
         }
 
-        _player.playerScore = +(updatesCompleted * difficultyMod * baseScore);
+        _player.playerScore += updatesCompleted * difficultyMod * baseScore;
+        SoundManager.Instance.PlaySound(updatedSound);
     }
 
     // method combining all the player facing text in the UI during gameplay, called at the start of each update call
@@ -154,6 +130,7 @@ public class LevelManager : MonoBehaviour
             {
                 GlobalScoringTick?.Invoke(true);
                 intervalTimer = globalScoringInterval;
+                AddCumulativeUptime();
             }
 
             if (allServersDown)
@@ -175,22 +152,62 @@ public class LevelManager : MonoBehaviour
         failTimer = failTimerStart;
     }
 
+    private void ServerDownChecker()
+    {
+        // Messy logic: loops over objects tagged 'server' to get the Controller & triggers the failTimer if none of them are up.
+        // To do: Alter this to handle multiple server variants. This may involve reworking how this timer functions entirely!
+        foreach (GameObject go in servers)
+        {
+            if (go.GetComponent<ServerController>().serverUp == true)
+            {
+                allServersDown = false;
+                break;
+            }
+            else
+            {
+                allServersDown = true;
+            }
+        }
+    }
+
     private void CheckWinLoseConds()
     {
         if(GameManager.Instance.gamePaused == false)
         {
+            if(winTimer <= 0 && allServersDown)
+            {
+                TriggerLose();
+                return;
+            }
+
             if (winTimer <= 0)
             {
-                GameManager.Instance.UpdateGameState(GameState.Win);
+                TriggerWin();
+                return;
             }
 
             if (_player.playerHealth <= 0 || failTimer <= 0)
             {
-                if (GameManager.Instance.State != GameState.Win)
-                {
-                    GameManager.Instance.UpdateGameState(GameState.Lose);
-                }
+                TriggerLose();
             }
         }
+    }
+
+    private void AddCumulativeUptime()
+    {
+        if (!allServersDown)
+        {
+            cumulativeUptime += (int)globalScoringInterval;
+        }
+    }
+
+    private void TriggerWin()
+    {
+        GameManager.Instance.UpdateGameState(GameState.Win);
+    }
+
+    private void TriggerLose()
+    {
+        GameManager.Instance.UpdateGameState(GameState.Lose);
     }
 }
