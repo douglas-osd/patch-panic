@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 6760107919349247210}
   - component: {fileID: -5095620305521349564}
   - component: {fileID: 2327301516741081678}
-  - component: {fileID: -1815365152364935345}
+  - component: {fileID: 2809531736174912033}
   m_Layer: 0
   m_Name: Server
   m_TagString: Server
@@ -292,7 +292,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_Sprite: {fileID: 7482667652216324306, guid: 0ef80467387284daea90ffb12c9dfe63, type: 3}
-  m_Color: {r: 0.6037736, g: 0.6037736, b: 0.6037736, a: 1}
+  m_Color: {r: 0.3018868, g: 0.2976148, b: 0.2976148, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -365,7 +365,7 @@ CircleCollider2D:
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
   m_Radius: 1
---- !u!114 &-1815365152364935345
+--- !u!114 &2809531736174912033
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -374,27 +374,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 6775305392036020325}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c63f76358d8454934a346f70b67dc7a9, type: 3}
+  m_Script: {fileID: 11500000, guid: 38c97cbe0bd274db4ae111feb40c788b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  lowertimeOffset: 0.8
-  uppertimeOffset: 1.2
-  updateFrequency: 20
-  downloadSpeed: 10
-  installSpeed: 10
-  downloadErrorRate: 20
-  installErrorRate: 20
-  difficultyRating: 1
-  serverLoggingEnabled: 0
-  animator: {fileID: 139941945972057150}
-  animator2: {fileID: 7087058275263986198}
-  updateClock: 0
-  downloadClock: 0
-  installClock: 0
-  damageClock: 0
-  serverStatus: 0
-  serverIsDown: 0
-  pendingUpdates: 0
+  _serverType: {fileID: 11400000, guid: 8ed98ec054d1d4e7384f395bf34e94ba, type: 2}
+  State: 0
+  serverUp: 0
+  updateQueue: 0
   downloadedUpdates: 0
-  downColour: {r: 194, g: 74, b: 74, a: 1}
-  upColour: {r: 186, g: 200, b: 182, a: 1}

@@ -30,85 +30,20 @@ public class ServerType : ScriptableObject
         };
     }
 
-    public bool HandleUpdateTimer(float timer, bool clockSet, bool wantsUpdate)
-    {
-        if(!wantsUpdate)
-        {
-            clockSet = false;
-            timer = 0.0f;
-            return false;
-        }
-
-        if(!clockSet)
-        {
-            timer = Random.Range(updateFrequency.minValue, updateFrequency.maxValue);
-            clockSet = true;
-        }
-
-        timer -= Time.deltaTime;
-
-        if(timer <= 0.0f)
-        {
-            clockSet = false;
-            timer = 0.0f;
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool HandleDownloadTimer(float timer, bool clockSet)
-    {
-        if(!clockSet)
-        {
-            timer = Random.Range(downloadSpeed.minValue, downloadSpeed.maxValue);
-            clockSet = true;
-        }
-
-        timer -= Time.deltaTime;
-
-        if(timer <= 0.0f)
-        {
-            clockSet = false;
-            timer = 0.0f;
-            return true;
-        }
-
-        return false;
-    }
-
-    public bool HandleInstallTimer(float timer, bool clockSet)
-    {
-        if(!clockSet)
-        {
-            timer = Random.Range(installSpeed.minValue, installSpeed.maxValue);
-            clockSet = true;
-        }
-
-        timer -= Time.deltaTime;
-
-        if(timer <= 0.0f)
-        {
-            clockSet = false;
-            timer = 0.0f;
-            return true;
-        }
-
-        return false;
-    }
-
-    public void DoesServerWantUpdates(int updateQueue, bool wantsUpdate)
+    public bool DoesServerWantUpdates(int updateQueue)
     {
         if (updateQueue >= maxUpdatesInQueue)
         {
-            wantsUpdate = false;
+            return false;
         }
         else
         {
-            wantsUpdate = true;
+            return true;
         }
     }
 
+    // Logic for if the server is fully up to date. Runs when update is complete.
+    // If the update queue is 0, returns true, meaning it is fully updates.
     public bool CheckFullyUpdated(int updateQueue)
     {
         if(updateQueue == 0)

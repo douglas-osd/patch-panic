@@ -7,7 +7,7 @@ using TMPro;
 public class MainMenu : MonoBehaviour
 {
     [SerializeField] TMP_Text highScoreText;
-    [SerializeField] AudioSource buttonAudio;
+    [SerializeField] AudioClip buttonAudio;
 
     private void Start()
     {
@@ -16,15 +16,13 @@ public class MainMenu : MonoBehaviour
 
     public void PlayGame()
     {
-        buttonAudio.Stop();
-        buttonAudio.Play();
+        SoundManager.Instance.PlaySound(buttonAudio);
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
     }
 
     public void QuitGame()
     {
-        buttonAudio.Stop();
-        buttonAudio.Play();
+        SoundManager.Instance.PlaySound(buttonAudio);
         Application.Quit();
     }
 

@@ -25,7 +25,6 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        // Run TogglePause on escape press
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             TogglePause();
@@ -61,8 +60,7 @@ public class GameManager : MonoBehaviour
     }
 
 
-    // Pauses game if game is playing. Plays game if game is paused.
-    // Also handles pausing & unpausing music.
+    // Pauses & unpauses the game & music when called.
     private void TogglePause()
     {
         if(State == GameState.Playing)
@@ -77,40 +75,47 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // most logic stemming from game states is contained in other scripts
+    // Most logic leveraging game states exists in other scripts.
 
     private void HandlePlaying()
     {
-        gamePaused = false;
-        Time.timeScale = 1;
-        SoundManager.Instance.MusicPauser(false);
-
+        GamePauser(false);
     }
 
     private void HandlePaused()
     {
-        gamePaused = true;
-        Time.timeScale = 0;
-        SoundManager.Instance.MusicPauser(true);
+        GamePauser(true);
     }
 
     private void HandleWin()
     {
-        gamePaused = true;
-        Time.timeScale = 0;
-        SoundManager.Instance.MusicPauser(true);
+        GamePauser(true);
     }    
 
     private void HandleLose()
     {
-        gamePaused = true;
-        Time.timeScale = 0;
-        SoundManager.Instance.MusicPauser(true);
+        GamePauser(true);
     }
 
     private void HandleQuit()
     {
         Application.Quit();
+    }
+
+    private void GamePauser(bool shouldPause)
+    {
+        if(shouldPause)
+        {
+            gamePaused = true;
+            Time.timeScale = 0;
+            SoundManager.Instance.MusicPauser(true);
+        }
+        if(!shouldPause)
+        {
+            gamePaused = false;
+            Time.timeScale = 1;
+            SoundManager.Instance.MusicPauser(false);
+        }
     }
 
 }
