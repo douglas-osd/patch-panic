@@ -9,7 +9,7 @@ public class LevelManager : MonoBehaviour
 
     public static LevelManager Instance;
 
-    [SerializeField] public Player _player;
+    public Player _player;
 
     [Header("UI Elements")]
     [SerializeField] private TMP_Text playerScoreText;
@@ -22,18 +22,20 @@ public class LevelManager : MonoBehaviour
     public int cumulativeUptime;
 
     [Header("Settings")]
-    public int startingPlayerHealth;
-    public float globalScoringInterval;
+    [SerializeField] private int startingPlayerHealth;
+    [SerializeField] private float globalScoringInterval;
     [SerializeField] private float failTimerStart = 30.0f, winTimer = 120.0f;
     [SerializeField] private AudioClip levelMusic, updatedSound;
+    [SerializeField] private string outOfTimeLoseText, downLoseText, hackedLoseText;
 
     private float failTimer;
 
     private GameObject[] servers;
     private TimeSpan levelTimespan;
     private TimeSpan failTimespan;
-    public bool allServersDown;
+    [HideInInspector] public bool allServersDown;
     private float intervalTimer;
+    [HideInInspector] public string failCause;
 
     public static event Action<bool> GlobalScoringTick;
 
@@ -176,6 +178,7 @@ public class LevelManager : MonoBehaviour
         {
             if(winTimer <= 0 && allServersDown)
             {
+                failCause = outOfTimeLoseText;
                 TriggerLose();
                 return;
             }
@@ -186,8 +189,16 @@ public class LevelManager : MonoBehaviour
                 return;
             }
 
-            if (_player.playerHealth <= 0 || failTimer <= 0)
+            if (_player.playerHealth <= 0)
             {
+                failCause = hackedLoseText;
+                TriggerLose();
+                return;
+            }
+
+            if (failTimer <= 0)
+            {
+                failCause = downLoseText;
                 TriggerLose();
             }
         }

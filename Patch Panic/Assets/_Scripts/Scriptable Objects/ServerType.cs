@@ -15,8 +15,8 @@ public class ServerType : ScriptableObject
 
     [MinMaxRange(0, 30)] public RangedFloat updateFrequency, downloadSpeed, installSpeed;
 
-    [SerializeField] public float downloadErrorRate, installErrorRate;
-    [SerializeField] public int baseScore, baseDamage, difficultyModifier, maxUpdatesInQueue;
+    public float downloadErrorRate, installErrorRate;
+    public int baseScore, baseDamage, difficultyModifier, maxUpdatesInQueue;
 
 
 

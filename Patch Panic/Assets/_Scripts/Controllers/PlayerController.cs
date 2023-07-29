@@ -8,7 +8,7 @@ public class PlayerController : MonoBehaviour
 
     private float horizontal;
     private float vertical;
-    private float moveLimiter = 0.7f;
+    private readonly float moveLimiter = 0.7f;
 
     [Header("Settings")]
     [SerializeField] private float runSpeed = 20.0f;

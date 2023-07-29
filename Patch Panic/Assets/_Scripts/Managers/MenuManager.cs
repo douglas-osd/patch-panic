@@ -10,7 +10,7 @@ public class MenuManager : MonoBehaviour
     public static MenuManager Instance;
 
     [SerializeField] private GameObject pauseMenu, failMenu, winMenu;
-    [SerializeField] private TMP_Text finalScore, winningScore;
+    [SerializeField] private TMP_Text finalScore, winningScore, failureCause;
     [SerializeField] private AudioClip buttonAudio;
 
     TimeSpan uptimeScore;
@@ -35,6 +35,7 @@ public class MenuManager : MonoBehaviour
         if(state == GameState.Lose)
         {
             finalScore.text = $"You scored {LevelManager.Instance._player.playerScore}";
+            failureCause.text = LevelManager.Instance.failCause;
             SetHighScore();
         }
 

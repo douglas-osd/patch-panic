@@ -37,13 +37,13 @@ public class ServerController : MonoBehaviour
     private void Awake()
     {
         LevelManager.GlobalScoringTick += LevelManagerGlobalScoringTick;
-        //WorkstationController.WorkstationTrigger += WorkstationTrigger;
+        WorkstationController.WorkstationTrigger += WorkstationTrigger;
     }
 
     private void OnDestroy()
     {
         LevelManager.GlobalScoringTick -= LevelManagerGlobalScoringTick;
-        //WorkstationController.WorkstationTrigger -= WorkstationTrigger;
+        WorkstationController.WorkstationTrigger -= WorkstationTrigger;
     }
 
     // Runs on event: runs the logic for adding score based on this server's status.
@@ -53,12 +53,11 @@ public class ServerController : MonoBehaviour
         Debug.Log("Score ticked.");
     }
 
-    public void WorkstationTrigger()
+    public void WorkstationTrigger(bool triggered)
     {
         if(State == ServerState.WaitingToNotify)
         {
             UpdateServerState(ServerState.UsersNotified);
-            Debug.Log("Users notified by workstation.");
         }
     }
 

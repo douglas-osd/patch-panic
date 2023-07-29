@@ -7,9 +7,9 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
 
-    public GameState State;
+    [HideInInspector] public GameState State;
 
-    public bool gamePaused;
+    [HideInInspector] public bool gamePaused;
 
     public static event Action<GameState> OnGameStateChanged;
 

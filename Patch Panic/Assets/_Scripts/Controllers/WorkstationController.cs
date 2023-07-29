@@ -8,16 +8,16 @@ public class WorkstationController : MonoBehaviour
 
     public static WorkstationController Instance;
 
-    //public static event Action<bool> WorkstationTrigger;
+    public static event Action<bool> WorkstationTrigger;
 
-    private GameObject[] servers;
+    //private GameObject[] servers;
 
     private bool canClick;
 
     private void Awake()
     {
         Instance = this;
-        servers = GameObject.FindGameObjectsWithTag("Server");
+        //servers = GameObject.FindGameObjectsWithTag("Server");
     }
 
     private void OnMouseDown()
@@ -29,12 +29,12 @@ public class WorkstationController : MonoBehaviour
 
         if (canClick)
         {
-            //WorkstationTrigger?.Invoke(true);
+            WorkstationTrigger?.Invoke(true);
 
-            foreach (GameObject go in servers)
-            {
-                go.GetComponent<ServerController>().WorkstationTrigger();
-            }
+            //foreach (GameObject go in servers)
+            //{
+            //    go.GetComponent<ServerController>().WorkstationTrigger();
+            //}
         }
     }
 
