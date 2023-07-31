@@ -17,6 +17,7 @@ public class ServerType : ScriptableObject
 
     public float downloadErrorRate, installErrorRate;
     public int baseScore, baseDamage, difficultyModifier, maxUpdatesInQueue;
+    public string serverVariant;
 
 
 

@@ -25,6 +25,7 @@ public class ServerController : MonoBehaviour
     private bool canClick;
 
     public int updateQueue;
+    [HideInInspector] public string serverVariant;
 
     public int downloadedUpdates;
 
@@ -32,6 +33,7 @@ public class ServerController : MonoBehaviour
     {
         UpdateServerState(ServerState.Idle);
         animator = GetComponent<Animator>();
+        serverVariant = _serverType.serverVariant;
     }
 
     private void Awake()

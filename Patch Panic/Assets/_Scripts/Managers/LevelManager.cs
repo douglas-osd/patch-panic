@@ -57,6 +57,7 @@ public class LevelManager : MonoBehaviour
         _player.playerHealth = startingPlayerHealth;
         SoundManager.Instance.PlayMusic(levelMusic);
         servers = GameObject.FindGameObjectsWithTag("Server");
+        TriggerUpdateAtRandom();
     }
 
     void Update()
@@ -65,7 +66,8 @@ public class LevelManager : MonoBehaviour
 
         CheckWinLoseConds();
 
-        ServerDownChecker();
+        // TO DO: Allow this to fetch possible server types from an array so that this isn't hard coded.
+        ServerDownChecker("Default");
 
         failTimerUI.SetActive(allServersDown);
 
@@ -154,12 +156,16 @@ public class LevelManager : MonoBehaviour
         failTimer = failTimerStart;
     }
 
-    private void ServerDownChecker()
+    private void ServerDownChecker(string serverVariant)
     {
         // Messy logic: loops over objects tagged 'server' to get the Controller & triggers the failTimer if none of them are up.
         // To do: Alter this to handle multiple server variants. This may involve reworking how this timer functions entirely!
         foreach (GameObject go in servers)
         {
+            if (go.GetComponent<ServerController>().serverVariant != serverVariant)
+            {
+                break;
+            }
             if (go.GetComponent<ServerController>().serverUp == true)
             {
                 allServersDown = false;
@@ -220,5 +226,11 @@ public class LevelManager : MonoBehaviour
     private void TriggerLose()
     {
         GameManager.Instance.UpdateGameState(GameState.Lose);
+    }
+
+    private void TriggerUpdateAtRandom()
+    {
+        GameObject go = servers[UnityEngine.Random.Range(0, servers.Length)];
+        go.GetComponent<ServerController>().updateQueue++;
     }
 }

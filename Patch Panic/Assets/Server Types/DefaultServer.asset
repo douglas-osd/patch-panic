@@ -27,3 +27,4 @@ MonoBehaviour:
   baseDamage: 1
   difficultyModifier: 1
   maxUpdatesInQueue: 5
+  serverVariant: Default
