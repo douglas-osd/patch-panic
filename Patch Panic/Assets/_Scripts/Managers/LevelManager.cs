@@ -19,7 +19,7 @@ public class LevelManager : MonoBehaviour
     [SerializeField] private TMP_Text failTimerText;
 
     [Header("CurrentScores")]
-    public int cumulativeUptime;
+    public float cumulativeUptime;
 
     [Header("Settings")]
     [SerializeField] private int startingPlayerHealth;
@@ -93,9 +93,15 @@ public class LevelManager : MonoBehaviour
     {
         if(fullyUpdated)
         {
-            _player.playerScore += updatesCompleted * difficultyMod * baseScore * 2;
+            _player.playerScore += updatesCompleted * difficultyMod * baseScore * 10;
             SoundManager.Instance.PlaySound(updatedSound);
             return;
+        }
+
+        if(updatesCompleted > 1)
+        {
+            _player.playerScore += updatesCompleted * difficultyMod * baseScore * updatesCompleted;
+            SoundManager.Instance.PlaySound(updatedSound);
         }
 
         _player.playerScore += updatesCompleted * difficultyMod * baseScore;
@@ -134,7 +140,6 @@ public class LevelManager : MonoBehaviour
             {
                 GlobalScoringTick?.Invoke(true);
                 intervalTimer = globalScoringInterval;
-                AddCumulativeUptime();
             }
 
             if (allServersDown)
@@ -145,6 +150,7 @@ public class LevelManager : MonoBehaviour
             if (!allServersDown)
             {
                 DownTimerReset();
+                cumulativeUptime += Time.deltaTime;
             }
 
             winTimer -= Time.deltaTime;
@@ -207,14 +213,6 @@ public class LevelManager : MonoBehaviour
                 failCause = downLoseText;
                 TriggerLose();
             }
-        }
-    }
-
-    private void AddCumulativeUptime()
-    {
-        if (!allServersDown)
-        {
-            cumulativeUptime += (int)globalScoringInterval;
         }
     }
 
